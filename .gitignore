@@ -10,3 +10,7 @@
 .hgignore
 .hg/
 /.clj-kondo
+.lsp
+.direnv
+result
+.env
