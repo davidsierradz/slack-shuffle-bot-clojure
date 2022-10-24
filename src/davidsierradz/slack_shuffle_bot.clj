@@ -1,6 +1,7 @@
 (ns davidsierradz.slack-shuffle-bot
   (:require [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.params :refer [wrap-params]]
+            [ring.logger :as logger]
             [compojure.core :refer [POST]]
             [clojure.string :refer [join split]]
             [clojure.java.io :refer [copy]])
@@ -36,47 +37,47 @@
   (fn [request]
     (let [{body :stream, contents :contents} (tee-stream (:body request))
           duplicated-request (assoc request
-                               :body body
-                               :contents contents)]
+                                    :body body
+                                    :contents contents)]
       (handler duplicated-request))))
 
 (defn wrap-verify-request-middleware
   [handler]
   (fn [request]
     (if (= (str
-             "v0="
-             (hmac slack-signing-secret
-                   (str "v0:" (get (:headers request)
-                                   "x-slack-request-timestamp")
-                        ":" (apply str (map #(char %) (:contents request))))))
+            "v0="
+            (hmac slack-signing-secret
+                  (str "v0:" (get (:headers request)
+                                  "x-slack-request-timestamp")
+                       ":" (apply str (map #(char %) (:contents request))))))
            (get (:headers request) "x-slack-signature"))
       (handler request)
       {:status 403})))
 
 (def inner-handler
-  (wrap-extract-body-middleware
-    (wrap-verify-request-middleware
-      (wrap-params
-        (POST
-          "/"
-          request
-          (let [text (get-in request [:params "text"])]
-            {:status 200,
-             :headers {"Content-Type" "application/json"},
-             :body (str
-                     "{\n  \"response_type\": \"in_channel\",\n  \"text\": \""
-                     "Date: "
-                     (.toString (java.time.ZonedDateTime/now))
-                     "\n\nItems:\n\n"
-                     (join " \n"
-                           (first (reduce (fn [acc v]
-                                            (let [i (inc (last acc))]
-                                              (conj [(conj (first acc)
-                                                           (str i ". " v))]
-                                                    i)))
-                                    [[] 0]
-                                    (shuffle (split text #" ")))))
-                     "\"\n}")}))))))
+  (-> (POST
+        "/"
+        request
+        (let [text (get-in request [:params "text"])]
+          {:status 200,
+           :headers {"Content-Type" "application/json"},
+           :body (str "{\n  \"response_type\": \"in_channel\",\n  \"text\": \""
+                      "Date: "
+                      (.toString (java.time.ZonedDateTime/now))
+                      "\n\nItems:\n\n"
+                      (join " \n"
+                            (first (reduce (fn [acc v]
+                                             (let [i (inc (last acc))]
+                                               (conj [(conj (first acc)
+                                                            (str i ". " v))]
+                                                     i)))
+                                           [[] 0]
+                                           (shuffle (split text #" ")))))
+                      "\"\n}")}))
+      (logger/wrap-log-request-params {:transform-fn #(assoc % :level :info)})
+      wrap-params
+      wrap-verify-request-middleware
+      wrap-extract-body-middleware))
 
 (defn -main
   []

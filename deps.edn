@@ -1,21 +1,22 @@
 {:aliases
-   {:depstar {:exec-args {},
-              :extra-deps {seancorfield/depstar {:mvn/version "1.1.136"}},
-              :ns-default hf.depstar},
-    :project/run {:exec-fn davidsierradz.slack-shuffle-bot/-main,
-                  :main-opts ["-m" "davidsierradz.slack-shuffle-bot"]},
-    :runner {:extra-deps {com.cognitect/test-runner
-                            {:git/url
-                               "https://github.com/cognitect-labs/test-runner",
-                             :sha "b6b3193fcc42659d7e46ecd1884a228993441182"}},
-             :main-opts ["-m" "cognitect.test-runner" "-d" "test"]},
-    :test {:extra-deps {org.clojure/test.check {:mvn/version "1.0.0"}},
-           :extra-paths ["test"]},
-    :uberjar {:extra-deps {seancorfield/depstar {:mvn/version "1.1.126"}},
-              :main-opts ["-m" "hf.depstar.uberjar" "slack-shuffle-bot.jar" "-C"
-                          "-m" "davidsierradz.slack-shuffle-bot"]}},
+ {:depstar {:exec-args {},
+            :extra-deps {seancorfield/depstar {:mvn/version "1.1.136"}},
+            :ns-default hf.depstar},
+  :project/run {:exec-fn davidsierradz.slack-shuffle-bot/-main,
+                :main-opts ["-m" "davidsierradz.slack-shuffle-bot"]},
+  :runner {:extra-deps {com.cognitect/test-runner
+                        {:git/url
+                         "https://github.com/cognitect-labs/test-runner",
+                         :sha "b6b3193fcc42659d7e46ecd1884a228993441182"}},
+           :main-opts ["-m" "cognitect.test-runner" "-d" "test"]},
+  :test {:extra-deps {org.clojure/test.check {:mvn/version "1.0.0"}},
+         :extra-paths ["test"]},
+  :uberjar {:extra-deps {seancorfield/depstar {:mvn/version "1.1.126"}},
+            :main-opts ["-m" "hf.depstar.uberjar" "slack-shuffle-bot.jar" "-C"
+                        "-m" "davidsierradz.slack-shuffle-bot"]}},
  :deps {compojure/compojure {:mvn/version "1.6.2"},
         hashp/hashp {:mvn/version "0.2.0"},
         org.clojure/clojure {:mvn/version "1.10.1"},
-        ring/ring {:mvn/version "1.8.2"}},
+        ring/ring {:mvn/version "1.8.2"}
+        ring-logger/ring-logger {:mvn/version "1.1.1"}},
  :paths ["src" "resources"]}
