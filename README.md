@@ -27,7 +27,7 @@ Don't forget to install your bot in some Slack workspace.
 
 ## Start
 
-Just run `clojure -P -M:project/run`:
+Just run `clojure -M:project/run`:
 
 ```console
 $ clojure -M:project/run
@@ -45,10 +45,33 @@ Slack slash commands needs some URL to send the request, if you don't want to co
 
 ### docker
 
-TODO
+1. First, build an image with: `docker build --tag=slack-shuffle-bot:latest .`
+2. Run a container: `docker run --name=bot --env-file=.env --rm --interactive --init --tty --publish=3000:3000 slack-shuffle-bot:latest`
+
+Don't forget to inject the `SLACK_SIGNING_SECRET` environment variable.
+
+### nix
+
+A Nix Flake exposes a Nix shell and a package to develop (with direnv) and consume the bot as a derivation:
+
+```nix
+systemd.services.slack-shuffle-bot = {
+  enable = true;
+  description = "This is a clojure application that exposes a Slack command like `/shuffle alice bob carol` to randomize the string to a list";
+  after = ["network.target"];
+  environment = {
+    SLACK_SIGNING_SECRET = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+  };
+  serviceConfig = {
+    Type = "simple";
+    ExecStart = "${slack-shuffle-bot.packages.x86_64-linux.bot-clj}/bin/slack-shuffle-bot";
+  };
+  wantedBy = ["multi-user.target"];
+};
+```
 
 ## License
 
-Copyright © 2020 David Sierra DiazGranados
+Copyright © 2022 David Sierra DiazGranados
 
-Distributed under the Eclipse Public License either version 1.0 or (at your option) any later version.
+Distributed under the Eclipse Public License either version 1.0.
