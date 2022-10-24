@@ -82,4 +82,14 @@
 (defn -main
   []
   (run-jetty inner-handler
-             {:port (Integer/parseInt (or (System/getenv "PORT") "3000"))}))
+             {:port (Integer/parseInt (or (System/getenv "PORT") "3000")),
+              :join? false}))
+
+(comment
+  (def state (atom (-main)))
+  (swap! state (fn [_] nil))
+  (.stop @state)
+  (.start @state)
+  @state
+  ;
+  )
