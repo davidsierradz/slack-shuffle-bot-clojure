@@ -1,8 +1,15 @@
-FROM openjdk:11
+FROM clojure AS builder
 
-WORKDIR /
+WORKDIR /app
 
-COPY slack-shuffle-bot-0.2.0-SNAPSHOT-standalone.jar .
-EXPOSE 3000
+COPY . .
 
-CMD java -cp slack-shuffle-bot-0.2.0-SNAPSHOT-standalone.jar: clojure.main -m davidsierradz.slack-shuffle-bot
+RUN clojure -M:uberjar
+
+FROM openjdk:17
+
+WORKDIR /app
+
+COPY --from=builder /app/slack-shuffle-bot.jar .
+
+CMD java -cp slack-shuffle-bot.jar: clojure.main -m davidsierradz.slack-shuffle-bot
