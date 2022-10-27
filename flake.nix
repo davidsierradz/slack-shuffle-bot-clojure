@@ -9,6 +9,7 @@
     clj-nix.inputs.flake-utils.follows = "flake-utils";
     clj-nix.inputs.devshell.url = "github:numtide/devshell";
     clj-nix.inputs.devshell.inputs.flake-utils.follows = "flake-utils";
+    clj-nix.inputs.devshell.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
