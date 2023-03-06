@@ -5,11 +5,6 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     clj-nix.url = "github:jlesquembre/clj-nix";
-    clj-nix.inputs.nixpkgs.follows = "nixpkgs";
-    clj-nix.inputs.flake-utils.follows = "flake-utils";
-    clj-nix.inputs.devshell.url = "github:numtide/devshell";
-    clj-nix.inputs.devshell.inputs.flake-utils.follows = "flake-utils";
-    clj-nix.inputs.devshell.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
